@@ -71,7 +71,14 @@ def handle_client(conn, addr):
 							pass
 				del cohorts[customer]
 				msg = "SUCCESS"
-
+		elif command == "exit":
+			if customer not in database:
+				msg = "FAILURE"
+			else:
+				del database[customer]
+				if customer in cohorts:
+					del cohorts[customer]
+				msg = "SUCCESS"
 		conn.send(msg.encode(FORMAT))
 
 
