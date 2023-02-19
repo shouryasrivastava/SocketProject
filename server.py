@@ -59,7 +59,18 @@ def handle_client(conn, addr):
 			if customer not in database:
 				msg = "FAILURE"
 			elif customer not in cohorts:
-				msg = "FAILURE"		
+				msg = "FAILURE"	
+			else:
+				cohort = cohorts[customer]
+				for c in cohort:
+					if c != customer:
+						try:
+							customer_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+							customer_socket.sendto("delete".encode("utf-8"),(database[c][1],database[c][3]))
+						except socket.error:
+							pass
+				del cohorts[customer]
+				msg = "SUCCESS"
 
 		conn.send(msg.encode(FORMAT))
 
