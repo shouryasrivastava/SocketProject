@@ -19,7 +19,7 @@ def handle_client(conn, addr):
 		msg = conn.recv(SIZE).decode(FORMAT)
 		tokens = msg.split()
 		command = tokens[0]
-		customer = tokens[1]
+		
 		#command,*argus = msg.split()
 		if msg == DISCONNECT_MSG:
 			connected = False
@@ -27,6 +27,7 @@ def handle_client(conn, addr):
 		print(f"[{addr}] {msg}")
 		#msg = f"Msg received: {msg}"
 		if command == "open":
+			customer = tokens[1]
 			balance = int(tokens[2])
 			ipv4_address = tokens[3]
 			port_b = int(tokens[4])
@@ -71,9 +72,39 @@ def handle_client(conn, addr):
 							pass
 				del cohorts[customer]
 				msg = "SUCCESS"
-		elif command == "exit":
+		elif command == "deposit":
+			amount = float(tokens[1])
+			balance += amount
+			database[customer] = (balance, ipv4_address, port_b, port_p)
+			print(database)
+			msg = "SUCCESS"
+
+		elif command == "withdrawal":
+			amount = float(tokens[1])
+			balance -= amount
+			database[customer] = (balance, ipv4_address, port_b, port_p)
+			print(database)
+			msg = "SUCCESS"
+		elif command == "transfer":
+			amount = float(tokens[1])
+			recipient = tokens[2]
+			label = int(tokens[3])
 			if customer not in database:
 				msg = "FAILURE"
+			elif database[customer][0] < amount:
+				msg = "FAILURE"
+			elif recipient not in database:
+				msg = "FAILURE"
+			else:
+				sender_balance = database[customer][0] - amount
+				recipient_balance = database[recipient][0] + amount
+				database[customer] = (sender_balance,) + database[customer][1:]
+				database[recipient] = (recipient_balance,) + database[recipient][1:]
+				msg = "SUCCESS"
+    
+		elif command == "exit":
+			if customer not in database:
+				msg = "FAILURE"	
 			else:
 				del database[customer]
 				if customer in cohorts:

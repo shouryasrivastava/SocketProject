@@ -25,6 +25,36 @@ def main():
 			msg = client.recv(SIZE).decode(FORMAT)
 			print(f"[SERVER] {msg}")
 		
+        # Add handling of transfer and lost-transfer commands
+		tokens = msg.split()
+		command = tokens[0]
+
+		if command == "transfer":
+			amount = float(tokens[1])
+			recipient = tokens[2]
+			label = int(tokens[3])
+			msg = f"transfer {amount} {recipient} {label}"
+			client.send(msg.encode(FORMAT))
+			response = client.recv(SIZE).decode(FORMAT)
+			print(f"[SERVER] {response}")
+			#amount, recipient, label = float(tokens[1]), tokens[2], int(tokens[3])
+            # Code to perform the transfer operation and update the states
+			elif command == "lost-transfer":
+				amount = float(tokens[1])
+				recipient = tokens[2]
+				msg = f"lost-transfer {amount} {recipient}"
+				client.send(msg.encode(FORMAT))
+				response = client.recv(SIZE).decode(FORMAT)
+				print(f"[SERVER] {response}")
+		#elif command == "lost-transfer":
+			#amount, recipient = float(tokens[1]), tokens[2]
+            # Code to perform the lost-transfer operation and update the states
+
+		#elif command == "checkpoint":
+            # Code to run the Checkpoint Algorithm and take a new permanent checkpoint
+
+		#elif command == "rollback":
+            # Code to run the Rollback Recovery Algorithm and rollback to a consistent state
 
 
 
