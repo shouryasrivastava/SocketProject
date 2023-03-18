@@ -29,6 +29,7 @@ def main():
 		tokens = msg.split()
 		command = tokens[0]
 
+
 		if command == "transfer":
 			amount = float(tokens[1])
 			recipient = tokens[2]
@@ -37,24 +38,31 @@ def main():
 			client.send(msg.encode(FORMAT))
 			response = client.recv(SIZE).decode(FORMAT)
 			print(f"[SERVER] {response}")
+
+		#if command == "transfer":
+			#amount = float(tokens[1])
+			#recipient = tokens[2]
+			#label = int(tokens[3])
+			#msg = f"transfer {amount} {recipient} {label}"
+			#client.send(msg.encode(FORMAT))
+			#response = client.recv(SIZE).decode(FORMAT)
+			#print(f"[SERVER] {response}")
 			#amount, recipient, label = float(tokens[1]), tokens[2], int(tokens[3])
             # Code to perform the transfer operation and update the states
-			elif command == "lost-transfer":
-				amount = float(tokens[1])
-				recipient = tokens[2]
-				msg = f"lost-transfer {amount} {recipient}"
-				client.send(msg.encode(FORMAT))
-				response = client.recv(SIZE).decode(FORMAT)
-				print(f"[SERVER] {response}")
-		#elif command == "lost-transfer":
-			#amount, recipient = float(tokens[1]), tokens[2]
-            # Code to perform the lost-transfer operation and update the states
-
-		#elif command == "checkpoint":
-            # Code to run the Checkpoint Algorithm and take a new permanent checkpoint
-
-		#elif command == "rollback":
-            # Code to run the Rollback Recovery Algorithm and rollback to a consistent state
+			
+			#elif command == "lost-transfer":
+			#	amount = float(tokens[1])
+			#	recipient = tokens[2]
+                # Code to perform the lost-transfer operation and update the states
+			#	sender = tokens[-1]
+                # Decrement balance at sender and record lost-transfer
+			#	database[sender] = (database[sender][0]-amount,) + database[sender][1:]
+			#	Cpq = database[sender][3][recipient]
+			#	Cpq.append(("lost-transfer", amount))
+                # Increment label of outgoing messages to recipient in cohort
+			#	for c in cohorts[sender]:
+				#	if c != recipient:
+ 				#		cohorts[sender][c] += 1
 
 
 

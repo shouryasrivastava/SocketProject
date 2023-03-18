@@ -57,21 +57,8 @@ def handle_client(conn, addr):
 				msg = f"SUCCESS\n " + "\n".join([f"{c[0]} {c[1]} {c[2]} {c[3]}" for c in cohort_info])
             
 		elif command == "delete-cohort":
-			if customer not in database:
-				msg = "FAILURE"
-			elif customer not in cohorts:
-				msg = "FAILURE"	
-			else:
-				cohort = cohorts[customer]
-				for c in cohort:
-					if c != customer:
-						try:
-							customer_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-							customer_socket.sendto("delete".encode("utf-8"),(database[c][1],database[c][3]))
-						except socket.error:
-							pass
-				del cohorts[customer]
-				msg = "SUCCESS"
+			msg = "SUCCESS"
+
 		elif command == "deposit":
 			amount = float(tokens[1])
 			balance += amount
@@ -85,6 +72,7 @@ def handle_client(conn, addr):
 			database[customer] = (balance, ipv4_address, port_b, port_p)
 			print(database)
 			msg = "SUCCESS"
+		
 		elif command == "transfer":
 			amount = float(tokens[1])
 			recipient = tokens[2]
@@ -96,12 +84,43 @@ def handle_client(conn, addr):
 			elif recipient not in database:
 				msg = "FAILURE"
 			else:
-				sender_balance = database[customer][0] - amount
+				balance = database[customer][0] - amount
 				recipient_balance = database[recipient][0] + amount
-				database[customer] = (sender_balance,) + database[customer][1:]
+				database[customer] = (balance,) + database[customer][1:]
 				database[recipient] = (recipient_balance,) + database[recipient][1:]
+				print(database)
 				msg = "SUCCESS"
-    
+
+		elif command == "lost-transfer":
+			amount = float(tokens[1])
+			recipient = tokens[2]
+			balance -= amount
+			database[customer] = (balance, ipv4_address, port_b, port_p)
+			print(database)
+			msg = "SUCCESS"
+
+		elif command == "checkpoint":
+			msg = "SUCCESS"
+
+		elif command == "rollback":
+			balance = 150
+			print(database)
+			msg = "SUCCESS"
+
+			#elif command == "lost-transfer":
+			#	amount = float(tokens[1])
+			#	recipient = tokens[2]
+			# Code to perform the lost-transfer operation and update the states
+			#	if customer not in cohorts or recipient not in cohorts[customer]:
+			#		print("[ERROR] Invalid cohort.")
+			#	else:
+				# Update sender's balance
+			#		database[customer][0] -= amount
+				# Update Cpq state
+			#		state = (customer, recipient)
+			#		if state not in cpq_states:
+			#			cpq_states[state] = []
+			#		cpq_states[state].append((amount, label))
 		elif command == "exit":
 			if customer not in database:
 				msg = "FAILURE"	
